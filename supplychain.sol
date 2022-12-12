@@ -1,4 +1,5 @@
 pragma solidity ^0.8.7;
+// SPDX-License-Identifier: MIT
 
 // Assumption: each finished product is fungible with other finished products. This makes it simpler to settle funds with producers.
 contract SupplyChain{
@@ -25,21 +26,24 @@ contract SupplyChain{
         producer = _producer;
     }
 
-    // manufacturer authorizer distributor
+    // manufacturer authorizes distributor
     function setDistributor(address _distributor) public{
         require(msg.sender == manufacturer,"Only manufacturer can approve manufacturer");
         distributor = _distributor;
     }
 
-    // manufacturer sets retailer
+    // distributor sets retailer
     function setRetailer(address _retailer) public{
-        require(distributor == 0x0000000000000000000000000000000000000000,"Distributor not assgined");
+        require(distributor != 0x0000000000000000000000000000000000000000,"Distributor not assgined");
         require(msg.sender == distributor,"Only distributor can authorize retailer");
         retailer = _retailer;
     }
 
+    // settle balances
     function releaseFunds() public{
+        require(msg.sender == manufacturer,"Only manufacturer can release funds");
         uint balance = address(this).balance;
+        require(balance > 0,"No funds inside contract");
         uint share = balance/4;
         // send funds to parties
         payable(producer).transfer(share);
