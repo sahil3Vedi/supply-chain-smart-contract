@@ -39,6 +39,14 @@ contract SupplyChain{
         retailer = _retailer;
     }
 
+    // send money to contract
+    // function sendMoneyToContract(uint value) public payable{}
+
+    // get balance of contract
+    function getBalance() public view returns(uint){
+        return address(this).balance;
+    }
+
     // settle balances
     function releaseFunds() public{
         require(msg.sender == manufacturer,"Only manufacturer can release funds");
@@ -51,4 +59,8 @@ contract SupplyChain{
         payable(distributor).transfer(share);
         payable(retailer).transfer(share);
     }
+
+    // fallback
+    fallback() external payable {}
+    receive() external payable {}
 }
